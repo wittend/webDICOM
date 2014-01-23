@@ -8,29 +8,35 @@
  * mousemove(x, y, painters)
  * mouseout(x, y, painters)
  **/
-function Roi() {
+function Roi()
+{
     this.started = false;
     this.startX = 0;
     this.startY = 0;
     this.lineColor = '#0f0';
 }
 
-Roi.prototype.setColor = function(hex) {
+Roi.prototype.setColor = function(hex)
+{
     this.lineColor = hex;
 };
 
-Roi.prototype.click = function() {
+Roi.prototype.click = function()
+{
 };
 
-Roi.prototype.mousedown = function(x, y) {
+Roi.prototype.mousedown = function(x, y)
+{
     this.startX = x;
     this.startY = y;
     this.started = true;
     this.lineColor = '#0f0';
 };
 
-Roi.prototype.mouseup = function(x, y, painters, target) {
-    if(this.started && this.startX !== x && this.startY !== y){
+Roi.prototype.mouseup = function(x, y, painters, target)
+{
+    if(this.started && this.startX !== x && this.startY !== y)
+    {
         // calculate and show length
         var painter = getPainterFromId(target.id, painters);
         var context = painter.context;
@@ -42,8 +48,10 @@ Roi.prototype.mouseup = function(x, y, painters, target) {
     this.started = false;
 };
 
-Roi.prototype.mousemove = function(x, y, painters, target) {
-    if(this.started) {
+Roi.prototype.mousemove = function(x, y, painters, target)
+{
+    if(this.started)
+    {
         var painter = getPainterFromId(target.id, painters);
         var context = painter.context;
         getPainterFromId(target.id, painters).drawImg();
@@ -56,13 +64,17 @@ Roi.prototype.mousemove = function(x, y, painters, target) {
     }
 };
 
-Roi.prototype.mouseout = function() {
+Roi.prototype.mouseout = function()
+{
     this.started = false;
 };
 
-var getPainterFromId = function(id, painters) {
-    for(var i = 0, len = painters.length; i < len; i++) {
-        if(painters[i].canvas.id === id) {
+var getPainterFromId = function(id, painters)
+{
+    for(var i = 0, len = painters.length; i < len; i++)
+    {
+        if(painters[i].canvas.id === id)
+        {
             return painters[i];
         }
     }
@@ -78,10 +90,11 @@ var getPainterFromId = function(id, painters) {
  * @param {Number} endY     Y-value of the end point
  * @returns {Number} Length betwen the two points
  */
-var calculateDist = function(painter, startX, startY, endX, endY) {
+var calculateDist = function(painter, startX, startY, endX, endY)
+{
     var pixelSpacing = painter.currentFile.PixelSpacing ? painter.currentFile.PixelSpacing : [1, 1];
-    var a = (endX - startX) * pixelSpacing[0] / painter.getScale(); 
+    var a = (endX - startX) * pixelSpacing[0] / painter.getScale();
     var b = (endY - startY) * pixelSpacing[1] / painter.getScale();
-    
+
     return (Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2)) / 10).toFixed(3) + ' cm';
 };

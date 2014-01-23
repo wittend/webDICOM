@@ -2,7 +2,8 @@
  * @desc Controller of the Dicom Viewer. Handles all user event from the GUI.
  * @author Michael Kaserer e1025263@student.tuwien.ac.at
  **/
-function DcmViewer() {
+function DcmViewer()
+{
     this.toolbox;
     this.tree;
     this.fileParser;
@@ -16,7 +17,8 @@ function DcmViewer() {
 /**
  * Initialization. Calls matrixHandler function.
  */
-DcmViewer.prototype.init = function() {
+DcmViewer.prototype.init = function()
+{
     this.toolbox = new Toolbox();
     this.matrixHandler($('#matrixView').val());
     this.tree = new Tree();
@@ -24,10 +26,11 @@ DcmViewer.prototype.init = function() {
 };
 
 /**
- * 
+ *
  * @param {String} toolName Sets the current tool of the toolbox by using the name of it. See Toolbox.js.
  */
-DcmViewer.prototype.setCurrentTool = function(toolName) {
+DcmViewer.prototype.setCurrentTool = function(toolName)
+{
     this.toolbox.setCurrentTool(toolName);
 };
 
@@ -35,9 +38,11 @@ DcmViewer.prototype.setCurrentTool = function(toolName) {
  * Sets the files to all painter of the viewer and enables the slider.
  * @param {Array} files Array of Dicom files
  */
-DcmViewer.prototype.showSeries = function(files) {
+DcmViewer.prototype.showSeries = function(files)
+{
     this.numFiles = files.length;
-    for(var i = 0, len = this.painters.length; i < len; i++) {
+    for(var i = 0, len = this.painters.length; i < len; i++)
+    {
         this.painters[i].setSeries(files);
         // setting files shifted to the painters
         var index = (this.scrollIndex + i) % this.numFiles;
@@ -48,12 +53,15 @@ DcmViewer.prototype.showSeries = function(files) {
     }
     this.eventsEnabled = true;
     // Enable the slider
-    if(this.numFiles > 1) {
+    if(this.numFiles > 1)
+    {
         var self = this;
-        $("#slider").slider('option', {
+        $("#slider").slider('option',
+        {
             max: self.numFiles - 1,
             disabled: false,
-            slide: function(e, ui) {
+            slide: function(e, ui)
+            {
                 self.scrollOne(ui.value);
             }
         });
@@ -64,9 +72,11 @@ DcmViewer.prototype.showSeries = function(files) {
  * Handles the change-event of the input element. Updates the progress bar, parses the files and renders it on a tree. Only Dicom files are processed.
  * @param {Event} e Change-event of the input element.
  */
-DcmViewer.prototype.inputHandler = function(e) {
+DcmViewer.prototype.inputHandler = function(e)
+{
     // detect 'cancel' or no files in fileList
-    if(e.target.files.length === 0) {
+    if(e.target.files.length === 0)
+    {
         return;
     }
     // for the progressbar
@@ -75,17 +85,20 @@ DcmViewer.prototype.inputHandler = function(e) {
     var fileList = e.target.files;
     var dcmList = [];
     this.parsedFileList = [];
-    
+
     // only Dicom files
-    for(var i = 0, len = fileList.length; i < len; i++) {
-        if(fileList[i].type === "application/dicom") {
+    for(var i = 0, len = fileList.length; i < len; i++)
+    {
+        if(fileList[i].type === "application/dicom")
+        {
             dcmList.push(fileList[i]);
         }
     }
 
     var self = this;
     // parse files
-    this.fileParser.parseFiles(dcmList, function(e) {
+    this.fileParser.parseFiles(dcmList, function(e)
+    {
         self.parsedFileList = e;
         // render them in a tree
         self.tree.render(self.parsedFileList);
@@ -94,10 +107,12 @@ DcmViewer.prototype.inputHandler = function(e) {
 
 /**
  * Handles click, mousemove, mousedown, mouseup, mouseout, mousewhell and scroll events of the viewer and passes the event to the current tool of the toolbox.
- * @param {Event} e 
+ * @param {Event} e
  */
-DcmViewer.prototype.eventHandler = function(e) {
-    if(this.eventsEnabled) {
+DcmViewer.prototype.eventHandler = function(e)
+{
+    if(this.eventsEnabled)
+    {
         // Firefox doesn't have the offsetX/offsetY properties -> own calculation
         e.x = !e.offsetX ? (e.pageX - $(e.target).offset().left) : e.offsetX;
         e.y = !e.offsetY ? (e.pageY - $(e.target).offset().top) : e.offsetY;
@@ -107,7 +122,8 @@ DcmViewer.prototype.eventHandler = function(e) {
 
         // pass the event to the currentTool of the toolbox
         var eventFunc = this.toolbox.currentTool[e.type];
-        if(eventFunc) {
+        if(eventFunc)
+        {
             eventFunc(e.x, e.y, this.painters, e.target);
         }
     }
@@ -117,8 +133,10 @@ DcmViewer.prototype.eventHandler = function(e) {
  * Scroll handler of the viewer. Updates also the slider.
  * @param {Event} evt
  */
-DcmViewer.prototype.scrollHandler = function(evt) {
-    if(this.numFiles > 1 && this.eventsEnabled) {
+DcmViewer.prototype.scrollHandler = function(evt)
+{
+    if(this.numFiles > 1 && this.eventsEnabled)
+    {
         evt.preventDefault();
         var e = evt.originalEvent;
 
@@ -129,7 +147,8 @@ DcmViewer.prototype.scrollHandler = function(evt) {
         // cyclic scrolling
         this.scrollIndex = (this.scrollIndex < 0) ? this.numFiles - 1 : (this.scrollIndex > this.numFiles - 1) ? 0 : this.scrollIndex;
         var tmp = [];
-        for(var i = 0, len = this.painters.length; i < len; i++) {
+        for(var i = 0, len = this.painters.length; i < len; i++)
+        {
             var index = (this.scrollIndex + i) % this.numFiles;
             tmp.push(index);
             this.painters[i].currentFile = this.painters[i].series[index];
@@ -138,7 +157,6 @@ DcmViewer.prototype.scrollHandler = function(evt) {
             var instanceNum = this.painters[i].currentFile.InstanceNumber ? this.painters[i].currentFile.InstanceNumber : ' - ';
             $(getSelector(this.painters[i]) + ' #instanceNum').text(instanceNum + ' / ' + this.numFiles);
         }
-
         return this.scrollIndex;
     }
 };
@@ -147,9 +165,11 @@ DcmViewer.prototype.scrollHandler = function(evt) {
  * Event handler for the slider.
  * @param {Number} num Current position of the slider
  */
-DcmViewer.prototype.scrollOne = function(num) {
+DcmViewer.prototype.scrollOne = function(num)
+{
     this.scrollIndex = num;
-    for(var i = 0, len = this.painters.length; i < len; i++) {
+    for(var i = 0, len = this.painters.length; i < len; i++)
+    {
         var index = (this.scrollIndex + i) % this.numFiles;
         this.painters[i].currentFile = this.painters[i].series[index];
         this.painters[i].drawImg();
@@ -163,7 +183,8 @@ DcmViewer.prototype.scrollOne = function(num) {
  * Event handler of the drop-down menu. Calculates the sizes of each canvas according to the useres screen size.
  * @param {Event} e
  */
-DcmViewer.prototype.matrixHandler = function(e) {
+DcmViewer.prototype.matrixHandler = function(e)
+{
     var rows = e.split(',')[0];
     var columns = e.split(',')[1];
     // width and heihgt of user's screen
@@ -175,10 +196,12 @@ DcmViewer.prototype.matrixHandler = function(e) {
     $('#viewerScreen').empty();
     var newPainters = [];
 
-    for(var y = 0; y < rows; y++) {
+    for(var y = 0; y < rows; y++)
+    {
         var rowName = 'row' + y;
         $('#viewerScreen').append('<div id="' + rowName + '" class="viewerRows"></div>');
-        for(var x = 0; x < columns; x++) {
+        for(var x = 0; x < columns; x++)
+        {
             $('#' + rowName).append('<div id="column' + x + '" class="viewerCells" style="width:' + cellWidth + 'px; height:' + cellHeight + 'px;"></div>');
             // new ids
             var tmpId = '#' + rowName + ' #column' + x;
@@ -190,7 +213,8 @@ DcmViewer.prototype.matrixHandler = function(e) {
             // paint Dicom image
             var tmpPainter = new CanvasPainter(newId);
             newPainters.push(tmpPainter);
-            if(this.eventsEnabled) {
+            if(this.eventsEnabled)
+            {
                 // setting files shifted to the painters
                 var index = (this.scrollIndex + x + y) % this.numFiles;
                 tmpPainter.setSeries(this.painters[0].series);
@@ -206,10 +230,13 @@ DcmViewer.prototype.matrixHandler = function(e) {
         }
     }
     // Show or hide infos
-    if($('#showStudyData').val() === 'true') {
+    if($('#showStudyData').val() === 'true')
+    {
         $('.studyInfo').show();
         $('.patientInfo').show();
-    } else {
+    }
+    else
+    {
         $('.studyInfo').hide();
         $('.patientInfo').hide();
     }
@@ -218,11 +245,14 @@ DcmViewer.prototype.matrixHandler = function(e) {
 };
 
 /**
- * Resets all painters. 
+ * Resets all painters.
  */
-DcmViewer.prototype.resetHandler = function() {
-    if(this.eventsEnabled) {
-        for(var i = 0, len = this.painters.length; i < len; i++) {
+DcmViewer.prototype.resetHandler = function()
+{
+    if(this.eventsEnabled)
+    {
+        for(var i = 0, len = this.painters.length; i < len; i++)
+        {
             this.painters[i].reset();
         }
     }
@@ -232,11 +262,14 @@ DcmViewer.prototype.resetHandler = function() {
  * Click handler of the tree. Sets the clicked series and calls showSeries.
  * @param {Event} e Click event
  */
-DcmViewer.prototype.treeClick = function(e) {
-    if(e.target.nodeName === 'A' && e.target.dataset.type === 'file') {
+DcmViewer.prototype.treeClick = function(e)
+{
+    if(e.target.nodeName === 'A' && e.target.dataset.type === 'file')
+    {
         var serie = [];
         var arr = e.target.dataset.index.split(',');
-        for(var i = 0; i < arr.length; i++) {
+        for(var i = 0; i < arr.length; i++)
+        {
             serie.push(this.parsedFileList[arr[i]]);
         }
         this.showSeries(serie);
@@ -247,21 +280,25 @@ DcmViewer.prototype.treeClick = function(e) {
  * Builds a HTML-table with the Dicom file's meta data for jQuery Dialog.
  * @returns {HTML} table
  */
-DcmViewer.prototype.openMetaDialog = function() {
+DcmViewer.prototype.openMetaDialog = function()
+{
     // alphabetical sort
-    var sortObject = function(o) {
+    var sortObject = function(o)
+    {
         var sorted = {},
                 key, a = [];
 
         for(key in o) {
-            if(o.hasOwnProperty(key)) {
+            if(o.hasOwnProperty(key))
+            {
                 a.push(key);
             }
         }
 
         a.sort();
 
-        for(key = 0; key < a.length; key++) {
+        for(key = 0; key < a.length; key++)
+        {
             sorted[a[key]] = o[a[key]];
         }
         return sorted;
@@ -274,9 +311,11 @@ DcmViewer.prototype.openMetaDialog = function() {
     var headCell1 = document.createElement("th");
     var headText1 = document.createTextNode('Field Name');
     headCell1.appendChild(headText1);
+
     var headCell2 = document.createElement("th");
     var headText2 = document.createTextNode('Content');
     headCell2.appendChild(headText2);
+    
     headRow.appendChild(headCell1);
     headRow.appendChild(headCell2);
     head.appendChild(headRow);
@@ -284,22 +323,25 @@ DcmViewer.prototype.openMetaDialog = function() {
 
     var body = document.createElement('tbody');
 
-    $.each(file, function(key, value) {
-        if(!$.isFunction(value)) { 
-            var currentRow = document.createElement("tr");
-            var cell1 = document.createElement("td");
-            var text1 = document.createTextNode(key);
+    $.each(file, function(key, value)
+    {
+        if(!$.isFunction(value))
+        {
+            var currentRow  = document.createElement("tr");
+            var cell1       = document.createElement("td");
+            var text1       = document.createTextNode(key);
             cell1.appendChild(text1);
-            var cell2 = document.createElement("td");
-            var text2 = document.createTextNode(value);
+
+            var cell2       = document.createElement("td");
+            var text2       = document.createTextNode(value);
             cell2.appendChild(text2);
+
             currentRow.appendChild(cell1);
             currentRow.appendChild(cell2);
             body.appendChild(currentRow);
         }
     });
     table.appendChild(body);
-
     return table;
 };
 
@@ -308,24 +350,31 @@ DcmViewer.prototype.openMetaDialog = function() {
  * @param {CanvasPainter} _this
  * @param {String} selector
  */
-var updateInfo = function(_this, selector) {
-    var isValidDate = function(d) {
+var updateInfo = function(_this, selector)
+{
+    var isValidDate = function(d)
+    {
         if(Object.prototype.toString.call(d) !== "[object Date]")
+        {
             return false;
+        }
         return !isNaN(d.getTime());
     };
 
-    var pName = _this.currentFile.PatientsName ? _this.currentFile.PatientsName : ' - ';
-    var pSex = _this.currentFile.PatientsSex ? ' (' + _this.currentFile.PatientsSex + ') ' : ' ';
-    var pID = _this.currentFile.PatientID ? _this.currentFile.PatientID : ' - ';
-    var x = _this.currentFile.PatientsBirthDate;
-    var pDate = '';
+    var pName   = _this.currentFile.PatientsName ? _this.currentFile.PatientsName : ' - ';
+    var pSex    = _this.currentFile.PatientsSex ? ' (' + _this.currentFile.PatientsSex + ') ' : ' ';
+    var pID     = _this.currentFile.PatientID ? _this.currentFile.PatientID : ' - ';
+    var x       = _this.currentFile.PatientsBirthDate;
+    var pDate   = '';
 
-    if(x) {
+    if(x)
+    {
         var d = new Date(x.slice(0, 4) + "/" + x.slice(4, 6) + "/" + x.slice(6, 8));
-        if(isValidDate(d)) {
+        if(isValidDate(d))
+        {
             pDate = d.toLocaleDateString();
-            if(_this.currentFile.PatientsAge) {
+            if(_this.currentFile.PatientsAge)
+            {
                 pDate += '  ' + _this.currentFile.PatientsAge;
             }
         }
@@ -336,11 +385,14 @@ var updateInfo = function(_this, selector) {
     x = _this.currentFile.SeriesDate;
     var time = _this.currentFile.SeriesTime;
     var sDate = '';
-    if(x) {
+    if(x)
+    {
         var d = new Date(x.slice(0, 4) + "/" + x.slice(4, 6) + "/" + x.slice(6, 8));
-        if(isValidDate(d)) {
+        if(isValidDate(d))
+        {
             sDate = d.toLocaleDateString();
-            if(time) {
+            if(time)
+            {
                 sDate += '  ' + time.slice(0, 2) + ':' + time.slice(2, 4) + ':' + time.slice(4, 6);
             }
         }
@@ -391,8 +443,9 @@ var updateInfo = function(_this, selector) {
  * Calculates the id of the div containing the painter.
  * @param {CanvasPainter} painter
  */
-var getSelector = function(painter) {
-    var row = painter.canvas.id.charAt(7);
-    var column = painter.canvas.id.charAt(6);
+var getSelector = function(painter)
+{
+    var row     = painter.canvas.id.charAt(7);
+    var column  = painter.canvas.id.charAt(6);
     return '#row' + row + ' #column' + column;
 };

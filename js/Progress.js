@@ -8,16 +8,21 @@ var current = 0;
 var max = 100;
 var self = this;
 
-self.addEventListener('message', function(e) {
+self.addEventListener('message', function(e)
+{
     max = e.data;
     self.postMessage('Max: ' + max);
 }, false);
 
-var progress = setInterval(function() {
+var progress = setInterval(function()
+{
     self.postMessage('Max: ' + max);
-    if(current >= max) {
+    if(current >= max)
+    {
         clearInterval(progress);
-    } else {
+    }
+    else
+    {
         current += 5;
         postMessage(((current / max) * 100).toFixed(0));
     }

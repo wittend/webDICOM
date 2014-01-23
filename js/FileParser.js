@@ -2,7 +2,8 @@
  * @desc Takes the files of the HTML input and parses them with the DicomParser.
  * @author Michael Kaserer e1025263@student.tuwien.ac.at
  **/
-function FileParser() {
+function FileParser()
+{
     this.files = [];
 }
 
@@ -12,70 +13,89 @@ function FileParser() {
  * @param {Array} rawFiles      Files to be parsed
  * @param {function} callback   Function to be called after all files are parsed
  */
-FileParser.prototype.parseFiles = function(rawFiles, callback) {
+FileParser.prototype.parseFiles = function(rawFiles, callback)
+{
     // Reset array
     this.files = [];
     var self = this;
     var goal = rawFiles.length;
-    
-    var setupReader = function(rawFile) {
+
+    var setupReader = function(rawFile)
+    {
         var reader = new FileReader();
         reader.readAsArrayBuffer(rawFile);
-        reader.onload = function(evt) {
-            if(evt.target.readyState === FileReader.DONE) {
+        reader.onload = function(evt)
+        {
+            if(evt.target.readyState === FileReader.DONE)
+            {
                 var array = new Uint8Array(evt.target.result);
                 var parser = new DicomParser(array);
                 var file = parser.parse_file();
 
-                if(typeof file === 'undefined') {
+                if(typeof file === 'undefined')
+                {
                     goal--;
                     //console.log("Can't read file: " + rawFile.name);
                     $('#errorMsg').append("<p class='ui-state-error ui-corner-all'><span class='ui-icon ui-icon-alert'></span>Can't read file: " + rawFile.name + "</p>");
                     return;
                 }
-                if(typeof file.RescaleSlope === 'undefined') {
+                if(typeof file.RescaleSlope === 'undefined')
+                {
                     file.RescaleSlope = 1;
                 }
-                if(typeof file.RescaleIntercept === 'undefined') {
+                if(typeof file.RescaleIntercept === 'undefined')
+                {
                     file.RescaleIntercept = 0;
                 }
-                if(typeof file.WindowCenter === 'undefined') {
+                if(typeof file.WindowCenter === 'undefined')
+                {
                     file.WindowCenter = 85;
                 }
-                if(typeof file.WindowWidth === 'undefined') {
+                if(typeof file.WindowWidth === 'undefined')
+                {
                     file.WindowWidth = 171;
                 }
-                if($.isArray(file.WindowCenter)) {
+                if($.isArray(file.WindowCenter))
+                {
                     file.WindowCenter = file.WindowCenter[0];
                 }
-                if($.isArray(file.WindowWidth)) {
+                if($.isArray(file.WindowWidth))
+                {
                     file.WindowWidth = file.WindowWidth[0];
                 }
-
                 self.files.push(file);
             }
         };
 
-        reader.onloadend = function(e) {
+        reader.onloadend = function(e)
+        {
             // Fire callback only when all files are parsed
-            if(self.files.length === goal) {
-                self.files.sort(function(a, b) {
+            if(self.files.length === goal)
+            {
+                self.files.sort(function(a, b)
+                {
                     var A = a.PatientsName.toLowerCase();
                     var B = b.PatientsName.toLowerCase();
                     if(A < B)
+                    {
                         return -1;
+                    }
                     if(A > B)
+                    {
                         return 1;
+                    }
                     return 0;
                 });
                 callback(self.files);
             }
         };
 
-        reader.onerror = function(e) {
+        reader.onerror = function(e)
+        {
             e = e || window.event;
 
-            switch(e.target.error.code) {
+            switch(e.target.error.code)
+            {
                 case e.target.error.NOT_FOUND_ERR:
                     $('#errorMsg').append("<p>File not found!</p>");
                     break;
@@ -96,9 +116,10 @@ FileParser.prototype.parseFiles = function(rawFiles, callback) {
             }
         };
     };
-    
+
     // call setupReader for all files
-    for(var i = 0, len = rawFiles.length; i < len; i++) {
+    for(var i = 0, len = rawFiles.length; i < len; i++)
+    {
         setupReader(rawFiles[i]);
     }
 };

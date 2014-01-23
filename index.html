@@ -45,66 +45,94 @@
         <script type="text/javascript" src="js/tools/Roi.js"></script>
 
         <script>
-            $(document).ready(function() {
+            $(document).ready(function()
+            {
                 var dcmViewer = new DcmViewer();
                 dcmViewer.init();
 
-                $('#dicomUpload').customFileInput({
+                $('#dicomUpload').customFileInput(
+                {
                     button_position: 'right'
-                }).change(function(e) {
+                }).change(function(e)
+                {
                     dcmViewer.inputHandler(e);
                 });
-                $('#fileTree').click(function(e) {
+
+                $('#fileTree').click(function(e)
+                {
                     dcmViewer.treeClick(e);
                 });
-                $('#buttonSet').buttonset().change(function() {
+
+                $('#buttonSet').buttonset().change(function()
+                {
                     dcmViewer.setCurrentTool($("input[name='toolbox-buttons']:checked").val());
                 });
-                $('#matrixView').selectBoxIt().change(function(e) {
+
+                $('#matrixView').selectBoxIt().change(function(e)
+                {
                     dcmViewer.matrixHandler(e.target.value);
                 });
-                $('#resetButton').button().click(function() {
+
+                $('#resetButton').button().click(function()
+                {
                     dcmViewer.resetHandler();
                 });
-                $('#metaButton').button().click(function() {
-                    if(dcmViewer.eventsEnabled) {
+
+                $('#metaButton').button().click(function()
+                {
+                    if(dcmViewer.eventsEnabled)
+                    {
                         $('#metaDialog').empty().append(dcmViewer.openMetaDialog()).dialog({
                             height: 600,
                             width: 600
                         });
                     }
                 });
-                $('#showStudyData').button().click(function() {
-                    if($('.studyInfo').is(':visible')) {
+
+                $('#showStudyData').button().click(function()
+                {
+                    if($('.studyInfo').is(':visible'))
+                    {
                         $('.studyInfo').hide();
                         $('.patientInfo').hide();
                         $('#showStudyData').text('Show Infos').val(false);
-                    } else {
+                    }
+                    else
+                    {
                         $('.studyInfo').show();
                         $('.patientInfo').show();
                         $('#showStudyData').text('Hide Infos').val(true);
                     }
                 });
 
-                $('#viewerScreen').click(function(e) {
+                $('#viewerScreen').click(function(e)
+                {
                     dcmViewer.eventHandler(e);
-                }).mousemove(function(e) {
+                }).mousemove(function(e)
+                {
                     dcmViewer.eventHandler(e);
-                }).mousedown(function(e) {
+                }).mousedown(function(e)
+                {
                     e.preventDefault();
                     dcmViewer.eventHandler(e);
-                }).mouseup(function(e) {
+                }).mouseup(function(e)
+                {
                     dcmViewer.eventHandler(e);
-                }).mouseout(function(e) {
+                }).mouseout(function(e)
+                {
                     dcmViewer.eventHandler(e);
-                }).bind('mousewheel', function(e) {
-                    if(dcmViewer.numFiles > 1) {
+                }).bind('mousewheel', function(e)
+                {
+                    if(dcmViewer.numFiles > 1)
+                    {
                         e.preventDefault();
                         var num = dcmViewer.scrollHandler(e);
                         $('#slider').slider('value', num);
                     }
-                }).bind('DOMMouseScroll', function(e) { // scroll event for firefox
-                    if(dcmViewer.numFiles > 1) {
+                }).bind('DOMMouseScroll', function(e)
+                { // scroll event for firefox
+                    if(dcmViewer.numFiles > 1)
+                    {
                         e.preventDefault();
                         var num = dcmViewer.scrollHandler(e);
                         $('#slider').slider('value', num);
@@ -112,47 +140,59 @@
                 });
 
                 // Shortcuts for move, zoom and windowLevel
-                $(window).keydown(function(e) {
+                $(window).keydown(function(e)
+                {
                     // strg/ctrl or Mac cmd key
-                    if(e.ctrlKey || e.keyCode === 91) {
+                    if(e.ctrlKey || e.keyCode === 91)
+                    {
                         $('#move').click();
                     }
-                    if(e.altKey) {
+                    if(e.altKey)
+                    {
                         $('#windowLevel').click();
                     }
-                    if(e.shiftKey) {
+                    if(e.shiftKey)
+                    {
                         $('#zoom').click();
                     }
                     //capslock
-                    if(e.keyCode === 20) {
+                    if(e.keyCode === 20)
+                    {
                         $('#roi').click();
                     }
                     return;
                 });
 
-                $("#slider").slider({
+                $("#slider").slider(
+                {
                     disabled: true
                 });
-                $('#progressBar').progressbar({
+                $('#progressBar').progressbar(
+                {
                     value: 1
                 }).hide();
             });
 
-            var progress = function(numFiles) {
+            var progress = function(numFiles)
+            {
                 var me = $('#progressBar').show().find('div').addClass('ui-corner-right');
                 $('*').css('cursor', 'wait');
                 $('#errorMsg').empty();
                 $('#fileTree').hide();
                 var worker = new Worker('js/Progress.js');
 
-                worker.onmessage = function(e) {
+                worker.onmessage = function(e)
+                {
                     var num = e.data;
-                    if(num >= 100) {
+                    if(num >= 100)
+                    {
                         $('#progressBar').hide();
                         $('*').css('cursor', 'default');
                         $('#fileTree').fadeIn(100).show();
                         me.css('width', '1px');
-                    } else {
+                    }
+                    else
+                    {
                         me.css('width', num + '%');
                     }
                 };
@@ -169,9 +209,10 @@
                     <div id="progressBar"></div>
                 </div>
                 <!--Error messages-->
-                <div id="errorMsg"></div>
-
-                <div id="fileTree"></div>
+                <div id="errorMsg">
+                </div>
+                <div id="fileTree">
+                </div>
             </aside>
             <div id="viewer">
                 <div id="toolboxHeader">
@@ -182,7 +223,6 @@
                             <input type="radio" id="zoom" name="toolbox-buttons" value="Zoom" /><label for="zoom">Zoom</label>
                             <input type="radio" id="roi" name="toolbox-buttons" value="Roi" /><label for="roi">ROI</label>
                         </div>
-
                         <div id="singleButtons">
                             <select id="matrixView" name="matrixView">
                                 <option value="1,1" selected>1 x 1</option>
@@ -197,10 +237,10 @@
                         <div id="slider"></div>
                     </div>
                 </div>
-
-                <div id="viewerScreen"></div>
-
-                <div id="metaDialog" title="Meta-Daten"></div>
+                <div id="viewerScreen">
+                </div>
+                <div id="metaDialog" title="Meta-Daten">
+                </div>
             </div>
         </div>
     </body>

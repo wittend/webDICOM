@@ -3,7 +3,8 @@
  * @param {String} canvasId Id of the HTML-canvas element for the painter.
  * @author Michael Kaserer e1025263@student.tuwien.ac.at
  **/
-function CanvasPainter(canvasId) {
+function CanvasPainter(canvasId)
+{
     this.canvas = document.getElementById(canvasId);
     this.context = this.canvas.getContext("2d");
     this.currentFile;
@@ -16,14 +17,16 @@ function CanvasPainter(canvasId) {
 
 /**
  * Sets a Dicom series to the painter and sorts it by InstanceNumber.
- * @param {Array} serie An array with Dicom files of a series. 
+ * @param {Array} serie An array with Dicom files of a series.
  */
-CanvasPainter.prototype.setSeries = function(serie) {
+CanvasPainter.prototype.setSeries = function(series)
+{
     // Sort by InstanceNumber
-    serie.sort(function(a, b) {
+    series.sort(function(a, b)
+    {
         return a.InstanceNumber - b.InstanceNumber;
     });
-    this.series = serie;
+    this.series = series;
     this.currentFile = this.series[0];
     this.wc = this.series[0].WindowCenter;
     this.ww = this.series[0].WindowWidth;
@@ -32,61 +35,68 @@ CanvasPainter.prototype.setSeries = function(serie) {
 };
 
 /**
- * 
+ *
  * @param {Number} wc   Window center
  * @param {Number} ww   Window with
  */
-CanvasPainter.prototype.setWindowing = function(wc, ww) {
+CanvasPainter.prototype.setWindowing = function(wc, ww)
+{
     this.wc = wc;
     this.ww = ww;
 };
 
 /**
- * 
+ *
  * @returns {Array} Window center and window with
  */
-CanvasPainter.prototype.getWindowing = function() {
+CanvasPainter.prototype.getWindowing = function()
+{
     return [this.wc, this.ww];
 };
 
 /**
- * 
+ *
  * @param {Number} scale
  */
-CanvasPainter.prototype.setScale = function(scale) {
+CanvasPainter.prototype.setScale = function(scale)
+{
     this.scale = scale;
 };
 
 /**
- * 
+ *
  * @returns {Number}
  */
-CanvasPainter.prototype.getScale = function() {
+CanvasPainter.prototype.getScale = function()
+{
     return this.scale;
 };
 
 /**
- * 
+ *
  * @param {Number} panX
  * @param {Number} panY
  */
-CanvasPainter.prototype.setPan = function(panX, panY) {
+CanvasPainter.prototype.setPan = function(panX, panY)
+{
     this.pan[0] = panX;
     this.pan[1] = panY;
 };
 
 /**
- * 
+ *
  * @returns {Array}
  */
-CanvasPainter.prototype.getPan = function() {
+CanvasPainter.prototype.getPan = function()
+{
     return this.pan;
 };
 
 /**
- * Resets window with & center, scale and pan to the original values and draws the Dicom image. 
+ * Resets window with & center, scale and pan to the original values and draws the Dicom image.
  */
-CanvasPainter.prototype.reset = function() {
+CanvasPainter.prototype.reset = function()
+{
     this.wc = this.series[0].WindowCenter;
     this.ww = this.series[0].WindowWidth;
     this.scale = calculateRatio(this.currentFile.Columns, this.currentFile.Rows, this.canvas.width, this.canvas.height);
@@ -97,7 +107,8 @@ CanvasPainter.prototype.reset = function() {
 /**
  * Draws the current Dicom file to the canvas element. Uses the windowing function to map the Dicom pixel values the 8bit canvas values.
  */
-CanvasPainter.prototype.drawImg = function() {
+CanvasPainter.prototype.drawImg = function()
+{
     //Change here width and height of the new canvas
     var width = this.canvas.width;
     var height = this.canvas.height;
@@ -105,24 +116,26 @@ CanvasPainter.prototype.drawImg = function() {
     tempcanvas.height = this.currentFile.Rows;
     tempcanvas.width = this.currentFile.Columns;
     var tempContext = tempcanvas.getContext("2d");
-    
+
     // Windowing function
     var lowestVisibleValue = this.wc - this.ww / 2.0;
     var highestVisibleValue = this.wc + this.ww / 2.0;
-    
+
     // color the new canvas black
     this.context.fillStyle = "#000";
     this.context.fillRect(0, 0, width, height);
     var imgData = tempContext.createImageData(this.currentFile.Columns, this.currentFile.Rows);
     var pixelData = this.currentFile.PixelData;
-    
-    if(typeof pixelData === 'undefined' || pixelData.length === 0) {
+
+    if(typeof pixelData === 'undefined' || pixelData.length === 0)
+    {
         $('#errorMsg').append("<p class='ui-state-error ui-corner-all'><span class='ui-icon ui-icon-alert'></span>Can't display image: "+ this.currentFile.PatientsName +" "+ this.currentFile.SeriesDescription +"</p>");
         return;
     }
-    
+
     // loop throug all pixel values and set R, G, B and alpha.
-    for(var i = 0, len = imgData.data.length; i < len; i += 4) {
+    for(var i = 0, len = imgData.data.length; i < len; i += 4)
+    {
         var intensity = pixelData[(i / 4)];
         intensity = intensity * this.currentFile.RescaleSlope + this.currentFile.RescaleIntercept;
         intensity = (intensity - lowestVisibleValue) / (highestVisibleValue - lowestVisibleValue);
@@ -141,7 +154,7 @@ CanvasPainter.prototype.drawImg = function() {
     var targetHeight = this.scale * this.currentFile.Columns;
     var xOffset = (width - targetWidth) / 2 + this.pan[0];
     var yOffset = (height - targetHeight) / 2 + this.pan[1];
-    
+
     // Draw it on the referencing canvas
     tempContext.putImageData(imgData, 0, 0);
     this.context.drawImage(tempcanvas, xOffset, yOffset, targetWidth, targetHeight);
@@ -155,9 +168,9 @@ CanvasPainter.prototype.drawImg = function() {
  * @param {Number} maxHeight    Height of the canvas element
  * @returns {Number} Computed scale
  */
-calculateRatio = function(srcWidth, srcHeight, maxWidth, maxHeight) {
+calculateRatio = function(srcWidth, srcHeight, maxWidth, maxHeight)
+{
     var ratio = [maxWidth / srcWidth, maxHeight / srcHeight];
     ratio = Math.min(ratio[0], ratio[1]);
-
     return ratio;
 };

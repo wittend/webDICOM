@@ -2,7 +2,8 @@
  * @desc Builds a tree structure from a array of Dicom files.
  * @author Michael Kaserer e1025263@student.tuwien.ac.at
  **/
-function Tree() {
+function Tree()
+{
     var dcmTree = {};
     var _html = [];
 
@@ -10,10 +11,11 @@ function Tree() {
      * Takes an array of Dicom files as input and computes a tree structure with html unordered lists.
      * @param {Array} list
      */
-    this.render = function(list) {
+    this.render = function(list)
+    {
         dcmTree = {};
         _html = [];
-        
+
         // Render the tree with the jqueryTree plugin
         $('#fileTree').empty().html(dcmRender(buildFromDcmList(list))).tree({
             expanded: 'li:first'
@@ -25,21 +27,29 @@ function Tree() {
      * @param {Array} files Array with Dicom files
      * @returns JSON tree structure
      */
-    var buildFromDcmList = function(files) {
-        for(var i = 0, len = files.length; i < len; i++) {
+    var buildFromDcmList = function(files)
+    {
+        for(var i = 0, len = files.length; i < len; i++)
+        {
             var file = files[i];
             var level1 = file.PatientsName ? file.PatientsName : 'undefined';
             var level2 = file.SeriesDescription ? file.SeriesDescription : 'undefined';
 
-            if(!dcmTree[level1]) {
+            if(!dcmTree[level1])
+            {
                 dcmTree[level1] = {};
                 dcmTree[level1][level2] = [];
                 dcmTree[level1][level2].push(i);
-            } else {
-                if(!dcmTree[level1][level2]) {
+            }
+            else
+            {
+                if(!dcmTree[level1][level2])
+                {
                     dcmTree[level1][level2] = [];
                     dcmTree[level1][level2].push(i);
-                } else {
+                }
+                else
+                {
                     dcmTree[level1][level2].push(i);
                 }
             }
@@ -52,12 +62,17 @@ function Tree() {
      * @param {JSON} tree
      * @returns HTML ul
      */
-    var dcmRender = function(tree) {
-        if(tree) {
-            for(var object in tree) {
+    var dcmRender = function(tree)
+    {
+        if(tree)
+        {
+            for(var object in tree)
+            {
                 if($.isArray(tree[object])) { // series have an array - patients a object
                     _html.push('<li><a href="#" data-type="file" data-index="' + tree[object] + '" >', object, '</a></li>');
-                } else {
+                }
+                else
+                {
                     _html.push('<li><a href="#" data-type="folder">', object, '</a>');
                     _html.push('<ul>');
                     dcmRender(tree[object]);

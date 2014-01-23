@@ -8,28 +8,35 @@
  * mousemove(x, y, painters)
  * mouseout(x, y, painters)
  **/
-function Zoom() {
+function Zoom()
+{
     this.started = false;
     this.curY = 0;
 }
 
-Zoom.prototype.click = function() {
+Zoom.prototype.click = function()
+{
 };
 
-Zoom.prototype.mousedown = function() {
+Zoom.prototype.mousedown = function()
+{
     this.started = true;
 };
 
-Zoom.prototype.mouseup = function() {
+Zoom.prototype.mouseup = function()
+{
     this.started = false;
 };
 
-Zoom.prototype.mousemove = function(x, y, painters) {
-    if(this.started) {
+Zoom.prototype.mousemove = function(x, y, painters)
+{
+    if(this.started)
+    {
         var deltaY = this.curY - y;
         var newDeltaY = painters[0].getScale() + deltaY / 100.0;
-        
-        for(var i = 0, len = painters.length; i < len; i++) {
+
+        for(var i = 0, len = painters.length; i < len; i++)
+        {
             painters[i].setScale(newDeltaY);
             painters[i].drawImg();
         }
@@ -37,9 +44,7 @@ Zoom.prototype.mousemove = function(x, y, painters) {
     this.curY = y;
 };
 
-Zoom.prototype.mouseout = function() {
+Zoom.prototype.mouseout = function()
+{
     this.started = false;
 };
-
-
-
